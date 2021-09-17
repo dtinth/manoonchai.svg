@@ -1,3 +1,4 @@
+import React from 'react'
 import Keyboard from '../src/Keyboard'
 import fs from 'fs'
 
