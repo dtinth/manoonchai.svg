@@ -23,7 +23,7 @@ export const settingsSchema = {
     options: {
       none: 'No coloring',
       consonant: 'Color by consonant class',
-      // finger: 'Color by finger',
+      finger: 'Color by finger',
     },
   },
 } as const
@@ -74,8 +74,8 @@ export default function Keyboard({ settings }: { settings: Settings }) {
                   height={heightPts}
                   rx={4}
                   stroke={appearance.getKeyStroke(row, column, labels)}
-                  strokeWidth={appearance.getKeyFill(row, column, labels)}
-                  fill="none"
+                  strokeWidth={1}
+                  fill={appearance.getKeyFill(row, column, labels)}
                 />
                 {!!labels && (
                   <KeyLabels
@@ -256,6 +256,8 @@ export interface ITheme {
   background: string
   keyStroke: string
   keyFill: string
+  keyColorChroma: number
+  keyColorLuminance: number
   labelFill: string
   labelColorChroma: number
   labelColorLuminance: number
@@ -266,14 +268,18 @@ const themes: Record<Settings['theme'], ITheme> = {
     background: '#353433',
     keyStroke: '#656463',
     keyFill: 'none',
+    keyColorChroma: 12,
+    keyColorLuminance: 24,
     labelFill: '#eee',
     labelColorChroma: 48,
     labelColorLuminance: 80,
   },
   light: {
-    background: '#fff',
+    background: '#eee',
     keyStroke: '#0004',
-    keyFill: '#0002',
+    keyFill: '#fff',
+    keyColorChroma: 24,
+    keyColorLuminance: 88,
     labelFill: '#000',
     labelColorChroma: 64,
     labelColorLuminance: 52,
@@ -317,7 +323,7 @@ const colorizers: Record<Settings['colorMode'], IColorizer> = {
     getLabelFill: (theme, row, column, char, type) => {
       let hue = 0
       let chroma = theme.labelColorChroma
-      let lightness = theme.labelColorLuminance
+      let luminance = theme.labelColorLuminance
       if (char < 'ก' || char >= '๏') {
         return theme.labelFill
       } else if (char < 'จ') {
@@ -337,7 +343,35 @@ const colorizers: Record<Settings['colorMode'], IColorizer> = {
       } else {
         hue = 330
       }
-      return lch2hex(lightness, chroma, hue)
+      return lch2hex(luminance, chroma, hue)
+    },
+  },
+  finger: {
+    ...noneColorizer,
+    getKeyFill: (theme, row, column) => {
+      let hue = 0
+      let chroma = theme.keyColorChroma
+      let luminance = theme.keyColorLuminance
+      if (row >= 4) {
+        return theme.keyFill
+      } else if (column < 2) {
+        hue = 0
+      } else if (column < 3) {
+        hue = 60
+      } else if (column < 4) {
+        hue = 120
+      } else if (column < 6) {
+        hue = 160
+      } else if (column < 8) {
+        hue = 200
+      } else if (column < 9) {
+        hue = 240
+      } else if (column < 10) {
+        hue = 300
+      } else {
+        hue = 360
+      }
+      return lch2hex(luminance, chroma, hue)
     },
   },
 }
