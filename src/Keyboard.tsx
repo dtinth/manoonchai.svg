@@ -34,8 +34,10 @@ export type Settings = {
 
 export default function Keyboard({
   settings,
+  extra,
 }: {
   settings: Partial<Settings>
+  extra?: React.ReactNode
 }) {
   const appliedSettings: Settings = Object.fromEntries(
     Object.entries(settingsSchema).map(([key, value]) => {
@@ -61,6 +63,12 @@ export default function Keyboard({
   return (
     <AppearanceContext.Provider value={appearance}>
       <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
+        {extra}
+        <style>{`
+          .label {
+            font-family: Waree;
+          }
+        `}</style>
         {keyWidths.map((widths, row) => {
           const y = insetPts + row * 4 * unitSizePts
           let currentUnits = 0
@@ -101,11 +109,6 @@ export default function Keyboard({
             )
           })
         })}
-        <style>{`
-        .label {
-          font-family: Waree;
-        }
-      `}</style>
       </svg>
     </AppearanceContext.Provider>
   )
