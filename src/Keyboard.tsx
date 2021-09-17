@@ -3,10 +3,10 @@ import './fonts/waree.css'
 import { lch2hex } from './Color'
 
 export const settingsSchema = {
-  color: {
+  theme: {
     default: 'dark',
     options: {
-      // light: 'Light theme',
+      light: 'Light theme',
       dark: 'Dark theme',
     },
   },
@@ -32,81 +32,11 @@ export type Settings = {
   [K in keyof typeof settingsSchema]: keyof typeof settingsSchema[K]['options']
 }
 
-const defaultAppearance: IAppearance = {
-  background: () => '#353433',
-  keyStroke: () => '#656463',
-  keyFill: () => 'none',
-  labelColor: (row, col, char, type) => {
-    const mode = 1
-    if (mode === 1) {
-      let hue = 0
-      let chroma = 48
-      let lightness = 80
-      let alpha = type === 'alt' ? 0.6 : 1
-      if (char < 'ก' || char >= '๏') {
-        chroma = 0
-      } else if (char < 'จ') {
-        hue = 0
-      } else if (char < 'ฎ') {
-        hue = 50
-      } else if (char < 'ด') {
-        hue = 100
-      } else if (char < 'บ') {
-        hue = 150
-      } else if (char < 'ย') {
-        hue = 200
-      } else if (char < 'ฯ') {
-        hue = 250
-      } else if (char < '็') {
-        hue = 300
-      } else {
-        hue = 330
-      }
-      return lch2hex(lightness, chroma, hue, alpha)
-    } else {
-      return type === 'alt' ? '#fff8' : '#fff'
-    }
-  },
-}
-
-const keySplitterModes: Record<
-  keyof typeof settingsSchema['keySplit']['options'],
-  {
-    units: number
-    marginLeft(row: number, column: number): number
-    grow(row: number, column: number): number
-  }
-> = {
-  none: {
-    units: 0,
-    marginLeft: () => 0,
-    grow: () => 0,
-  },
-  hand: {
-    units: 1,
-    marginLeft: (row: number, column: number) => {
-      return row < 4 ? (column === 6 ? 1 : 0) : 0
-    },
-    grow: (row: number, column: number) => {
-      return row === 4 && column === 3 ? 2 : 0
-    },
-  },
-  index: {
-    units: 2,
-    marginLeft: (row: number, column: number) => {
-      return row < 4 ? (column === 5 || column === 7 ? 1 : 0) : 0
-    },
-    grow: (row: number, column: number) => {
-      return row === 4 && column === 3 ? 2 : 0
-    },
-  },
-}
-
 export default function Keyboard({ settings }: { settings: Settings }) {
   const keySplitter =
     keySplitterModes[settings.keySplit] ||
     keySplitterModes[settingsSchema.keySplit.default]
-  const appearance = defaultAppearance
+  const appearance = useAppearance(settings)
   const unitSizePts = 8
   const insetPts = 16
   let totalUnits = keyWidths[0].reduce((a, b) => a + b) + keySplitter.units
@@ -190,6 +120,10 @@ function KeyLabels({
   labels: KeyLabelsSpec
 }) {
   const appearance = React.useContext(AppearanceContext)
+  if (!appearance) {
+    throw new Error('AppearanceContext is required')
+  }
+
   const hasAlt = labels[2].trim() != ''
   return (
     <g transform={`translate(${x}, ${y})`}>
@@ -198,19 +132,19 @@ function KeyLabels({
         y={height * 0.7}
         text={labels[0]}
         large
-        fill={appearance.labelColor(row, column, labels[0], 'main')}
+        fill={appearance.labelTextColor(row, column, labels[0], 'main')}
       />
       <KeyLabel
         x={width * 0.3}
         y={height * 0.3}
         text={labels[1]}
-        fill={appearance.labelColor(row, column, labels[1], 'shift')}
+        fill={appearance.labelTextColor(row, column, labels[1], 'shift')}
       />
       <KeyLabel
         x={width * 0.7}
         y={height * 0.3}
         text={labels[2]}
-        fill={appearance.labelColor(row, column, labels[2], 'alt')}
+        fill={appearance.labelTextColor(row, column, labels[2], 'alt')}
       />
     </g>
   )
@@ -251,7 +185,7 @@ export interface IAppearance {
   background(): string
   keyStroke(row: number, col: number, labels: KeyLabelsSpec | undefined): string
   keyFill(row: number, col: number, labels: KeyLabelsSpec | undefined): string
-  labelColor(
+  labelTextColor(
     row: number,
     col: number,
     char: string,
@@ -259,9 +193,99 @@ export interface IAppearance {
   ): string
 }
 
-/* eslint @typescript-eslint/no-use-before-define: off */
-export const AppearanceContext =
-  React.createContext<IAppearance>(defaultAppearance)
+export const AppearanceContext = React.createContext<IAppearance | null>(null)
+
+function useAppearance(settings: Settings): IAppearance {
+  const theme = themes[settings.theme]
+
+  return {
+    background: () => theme.background,
+    keyStroke: () => theme.keyStroke,
+    keyFill: () => theme.keyFill,
+    labelTextColor: (row, col, char, type) => {
+      const mode = 1
+      if (mode === 1) {
+        let hue = 0
+        let chroma = 48
+        let lightness = 80
+        let alpha = type === 'alt' ? 0.6 : 1
+        if (char < 'ก' || char >= '๏') {
+          chroma = 0
+        } else if (char < 'จ') {
+          hue = 0
+        } else if (char < 'ฎ') {
+          hue = 50
+        } else if (char < 'ด') {
+          hue = 100
+        } else if (char < 'บ') {
+          hue = 150
+        } else if (char < 'ย') {
+          hue = 200
+        } else if (char < 'ฯ') {
+          hue = 250
+        } else if (char < '็') {
+          hue = 300
+        } else {
+          hue = 330
+        }
+        return lch2hex(lightness, chroma, hue, alpha)
+      } else {
+        return type === 'alt' ? '#fff8' : '#fff'
+      }
+    },
+  }
+}
+
+export interface IKeySplitter {
+  units: number
+  marginLeft(row: number, column: number): number
+  grow(row: number, column: number): number
+}
+
+const keySplitterModes: Record<Settings['keySplit'], IKeySplitter> = {
+  none: {
+    units: 0,
+    marginLeft: () => 0,
+    grow: () => 0,
+  },
+  hand: {
+    units: 1,
+    marginLeft: (row: number, column: number) => {
+      return row < 4 ? (column === 6 ? 1 : 0) : 0
+    },
+    grow: (row: number, column: number) => {
+      return row === 4 && column === 3 ? 2 : 0
+    },
+  },
+  index: {
+    units: 2,
+    marginLeft: (row: number, column: number) => {
+      return row < 4 ? (column === 5 || column === 7 ? 1 : 0) : 0
+    },
+    grow: (row: number, column: number) => {
+      return row === 4 && column === 3 ? 2 : 0
+    },
+  },
+}
+
+export interface ITheme {
+  background: string
+  keyStroke: string
+  keyFill: string
+}
+
+const themes: Record<Settings['theme'], ITheme> = {
+  dark: {
+    background: '#353433',
+    keyStroke: '#656463',
+    keyFill: 'none',
+  },
+  light: {
+    background: '#fff',
+    keyStroke: '#0004',
+    keyFill: '#0002',
+  },
+}
 
 const keyWidths = [
   [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8],
