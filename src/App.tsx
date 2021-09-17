@@ -18,6 +18,7 @@ export default function App() {
                   <label htmlFor={id}>{key}</label>
                   <select
                     id={id}
+                    name={key}
                     value={(settings as any)[key]}
                     onChange={(e) => changeSetting(key, e.target.value)}
                   >
