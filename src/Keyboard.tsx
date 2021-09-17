@@ -61,7 +61,11 @@ export default function Keyboard({
 
   return (
     <AppearanceContext.Provider value={appearance}>
-      <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
+      <svg
+        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+      >
         {extra}
         <style>{`
           .label {
