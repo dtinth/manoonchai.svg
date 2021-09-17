@@ -1,5 +1,4 @@
 import React from 'react'
-import './fonts/waree.css'
 import { lch2hex } from './Color'
 
 export const settingsSchema = {
