@@ -32,9 +32,13 @@ export type Settings = {
   [K in keyof typeof settingsSchema]: keyof typeof settingsSchema[K]['options']
 }
 
-export default function Keyboard({ settings }: { settings: Settings }) {
+export default function Keyboard({
+  settings,
+}: {
+  settings: Partial<Settings>
+}) {
   const keySplitter =
-    keySplitterModes[settings.keySplit] ||
+    keySplitterModes[settings.keySplit!] ||
     keySplitterModes[settingsSchema.keySplit.default]
   const appearance = useAppearance(settings)
   const unitSizePts = 8
