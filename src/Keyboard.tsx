@@ -21,7 +21,7 @@ export const settingsSchema = {
   colorMode: {
     default: 'consonant',
     options: {
-      // none: 'No coloring',
+      none: 'No coloring',
       consonant: 'Color by consonant class',
       // finger: 'Color by finger',
     },
@@ -43,7 +43,7 @@ export default function Keyboard({ settings }: { settings: Settings }) {
   const svgWidth = totalUnits * unitSizePts + 2 * insetPts
   const svgHeight = keyWidths.length * 4 * unitSizePts + 2 * insetPts
   const keyInsetPts = 2
-  const background = appearance.background()
+  const background = appearance.getBackground()
 
   React.useEffect(() => {
     document.body.style.backgroundColor = background
@@ -73,8 +73,8 @@ export default function Keyboard({ settings }: { settings: Settings }) {
                   width={widthPts}
                   height={heightPts}
                   rx={4}
-                  stroke={appearance.keyStroke(row, column, labels)}
-                  strokeWidth={appearance.keyFill(row, column, labels)}
+                  stroke={appearance.getKeyStroke(row, column, labels)}
+                  strokeWidth={appearance.getKeyFill(row, column, labels)}
                   fill="none"
                 />
                 {!!labels && (
@@ -132,20 +132,22 @@ function KeyLabels({
         y={height * 0.7}
         text={labels[0]}
         large
-        fill={appearance.labelTextColor(row, column, labels[0], 'main')}
+        fill={appearance.getLabelFill(row, column, labels[0], 'main')}
       />
       <KeyLabel
         x={width * 0.3}
         y={height * 0.3}
         text={labels[1]}
-        fill={appearance.labelTextColor(row, column, labels[1], 'shift')}
+        fill={appearance.getLabelFill(row, column, labels[1], 'shift')}
       />
-      <KeyLabel
-        x={width * 0.7}
-        y={height * 0.3}
-        text={labels[2]}
-        fill={appearance.labelTextColor(row, column, labels[2], 'alt')}
-      />
+      <g opacity={0.5}>
+        <KeyLabel
+          x={width * 0.7}
+          y={height * 0.3}
+          text={labels[2]}
+          fill={appearance.getLabelFill(row, column, labels[2], 'alt')}
+        />
+      </g>
     </g>
   )
 }
@@ -164,14 +166,14 @@ function KeyLabel({
   large?: boolean
 }) {
   const offset =
-    4 + (/[่้๊๋์๎]/.test(text) ? 4 : 0) + (/[ุู]/.test(text) ? -4 : 0)
+    3 + (/[่้๊๋์๎]/.test(text) ? 4 : 0) + (/[ุู]/.test(text) ? -4 : 0)
   return (
     <text
       className="label"
       x={x}
       y={y + offset}
       textAnchor="middle"
-      fontSize={large ? '10pt' : '8pt'}
+      fontSize={large ? '9pt' : '7pt'}
       fill={fill}
     >
       {text}
@@ -182,10 +184,18 @@ function KeyLabel({
 type KeyLabelsSpec = [string, string, string]
 
 export interface IAppearance {
-  background(): string
-  keyStroke(row: number, col: number, labels: KeyLabelsSpec | undefined): string
-  keyFill(row: number, col: number, labels: KeyLabelsSpec | undefined): string
-  labelTextColor(
+  getBackground(): string
+  getKeyStroke(
+    row: number,
+    col: number,
+    labels: KeyLabelsSpec | undefined,
+  ): string
+  getKeyFill(
+    row: number,
+    col: number,
+    labels: KeyLabelsSpec | undefined,
+  ): string
+  getLabelFill(
     row: number,
     col: number,
     char: string,
@@ -197,42 +207,16 @@ export const AppearanceContext = React.createContext<IAppearance | null>(null)
 
 function useAppearance(settings: Settings): IAppearance {
   const theme = themes[settings.theme]
+  const colorizer = colorizers[settings.colorMode]
 
   return {
-    background: () => theme.background,
-    keyStroke: () => theme.keyStroke,
-    keyFill: () => theme.keyFill,
-    labelTextColor: (row, col, char, type) => {
-      const mode = 1
-      if (mode === 1) {
-        let hue = 0
-        let chroma = 48
-        let lightness = 80
-        let alpha = type === 'alt' ? 0.6 : 1
-        if (char < 'ก' || char >= '๏') {
-          chroma = 0
-        } else if (char < 'จ') {
-          hue = 0
-        } else if (char < 'ฎ') {
-          hue = 50
-        } else if (char < 'ด') {
-          hue = 100
-        } else if (char < 'บ') {
-          hue = 150
-        } else if (char < 'ย') {
-          hue = 200
-        } else if (char < 'ฯ') {
-          hue = 250
-        } else if (char < '็') {
-          hue = 300
-        } else {
-          hue = 330
-        }
-        return lch2hex(lightness, chroma, hue, alpha)
-      } else {
-        return type === 'alt' ? '#fff8' : '#fff'
-      }
-    },
+    getBackground: () => theme.background,
+    getKeyStroke: (row, column, labels) =>
+      colorizer.getKeyStroke(theme, row, column, labels),
+    getKeyFill: (row, column, labels) =>
+      colorizer.getKeyFill(theme, row, column, labels),
+    getLabelFill: (row, column, char, type) =>
+      colorizer.getLabelFill(theme, row, column, char, type),
   }
 }
 
@@ -272,6 +256,9 @@ export interface ITheme {
   background: string
   keyStroke: string
   keyFill: string
+  labelFill: string
+  colorChroma: number
+  colorLuminance: number
 }
 
 const themes: Record<Settings['theme'], ITheme> = {
@@ -279,11 +266,79 @@ const themes: Record<Settings['theme'], ITheme> = {
     background: '#353433',
     keyStroke: '#656463',
     keyFill: 'none',
+    labelFill: '#eee',
+    colorChroma: 48,
+    colorLuminance: 80,
   },
   light: {
     background: '#fff',
     keyStroke: '#0004',
     keyFill: '#0002',
+    labelFill: '#000',
+    colorChroma: 64,
+    colorLuminance: 52,
+  },
+}
+
+export interface IColorizer {
+  getKeyStroke(
+    theme: ITheme,
+    row: number,
+    column: number,
+    labels: KeyLabelsSpec | undefined,
+  ): string
+
+  getKeyFill(
+    theme: ITheme,
+    row: number,
+    column: number,
+    labels: KeyLabelsSpec | undefined,
+  ): string
+
+  getLabelFill(
+    theme: ITheme,
+    row: number,
+    column: number,
+    char: string,
+    type: 'main' | 'shift' | 'alt',
+  ): string
+}
+
+const noneColorizer: IColorizer = {
+  getKeyStroke: (theme) => theme.keyStroke,
+  getKeyFill: (theme) => theme.keyFill,
+  getLabelFill: (theme) => theme.labelFill,
+}
+
+const colorizers: Record<Settings['colorMode'], IColorizer> = {
+  none: noneColorizer,
+  consonant: {
+    ...noneColorizer,
+    getLabelFill: (theme, row, column, char, type) => {
+      let hue = 0
+      let chroma = theme.colorChroma
+      let lightness = theme.colorLuminance
+      if (char < 'ก' || char >= '๏') {
+        return theme.labelFill
+      } else if (char < 'จ') {
+        hue = 0
+      } else if (char < 'ฎ') {
+        hue = 50
+      } else if (char < 'ด') {
+        hue = 100
+      } else if (char < 'บ') {
+        hue = 150
+      } else if (char < 'ย') {
+        hue = 200
+      } else if (char < 'ฯ') {
+        hue = 250
+      } else if (char < '็') {
+        hue = 300
+      } else {
+        hue = 330
+      }
+      return lch2hex(lightness, chroma, hue)
+    },
   },
 }
 
