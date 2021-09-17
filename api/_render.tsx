@@ -3,6 +3,6 @@ import fs from 'fs'
 
 const waree = fs.readFileSync(require.resolve('../src/fonts/waree.css'))
 
-export function renderSvg() {
-  return <Keyboard settings={{}} extra={<style>{waree}</style>} />
+export function renderSvg(settings: any) {
+  return <Keyboard settings={settings} extra={<style>{waree}</style>} />
 }
