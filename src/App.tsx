@@ -8,29 +8,34 @@ export default function App() {
   return (
     <div className="App">
       <Keyboard settings={settings} />
-      <p>
-        {Object.entries(settingsSchema).map(
-          ([key, { options, default: defaultValue }]) => {
-            const id = `settings-${key}`
-            return (
-              <span key={key}>
-                <label htmlFor={id}>{key}</label>
-                <select
-                  id={id}
-                  value={(settings as any)[key]}
-                  onChange={(e) => changeSetting(key, e.target.value)}
-                >
-                  {Object.entries(options).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </span>
-            )
-          },
-        )}
-      </p>
+      <form action="/api/svg">
+        <p>
+          {Object.entries(settingsSchema).map(
+            ([key, { options, default: defaultValue }]) => {
+              const id = `settings-${key}`
+              return (
+                <span key={key}>
+                  <label htmlFor={id}>{key}</label>
+                  <select
+                    id={id}
+                    value={(settings as any)[key]}
+                    onChange={(e) => changeSetting(key, e.target.value)}
+                  >
+                    {Object.entries(options).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </span>
+              )
+            },
+          )}
+        </p>
+        <p>
+          <button type="submit">Generate SVG</button>
+        </p>
+      </form>
     </div>
   )
 }
