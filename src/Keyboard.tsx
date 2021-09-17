@@ -257,8 +257,8 @@ export interface ITheme {
   keyStroke: string
   keyFill: string
   labelFill: string
-  colorChroma: number
-  colorLuminance: number
+  labelColorChroma: number
+  labelColorLuminance: number
 }
 
 const themes: Record<Settings['theme'], ITheme> = {
@@ -267,16 +267,16 @@ const themes: Record<Settings['theme'], ITheme> = {
     keyStroke: '#656463',
     keyFill: 'none',
     labelFill: '#eee',
-    colorChroma: 48,
-    colorLuminance: 80,
+    labelColorChroma: 48,
+    labelColorLuminance: 80,
   },
   light: {
     background: '#fff',
     keyStroke: '#0004',
     keyFill: '#0002',
     labelFill: '#000',
-    colorChroma: 64,
-    colorLuminance: 52,
+    labelColorChroma: 64,
+    labelColorLuminance: 52,
   },
 }
 
@@ -316,8 +316,8 @@ const colorizers: Record<Settings['colorMode'], IColorizer> = {
     ...noneColorizer,
     getLabelFill: (theme, row, column, char, type) => {
       let hue = 0
-      let chroma = theme.colorChroma
-      let lightness = theme.colorLuminance
+      let chroma = theme.labelColorChroma
+      let lightness = theme.labelColorLuminance
       if (char < 'ก' || char >= '๏') {
         return theme.labelFill
       } else if (char < 'จ') {
