@@ -37,10 +37,15 @@ export default function Keyboard({
 }: {
   settings: Partial<Settings>
 }) {
+  const appliedSettings: Settings = Object.fromEntries(
+    Object.entries(settingsSchema).map(([key, value]) => {
+      return [key, (settings as any)[key] || value.default]
+    }),
+  ) as any
   const keySplitter =
-    keySplitterModes[settings.keySplit!] ||
+    keySplitterModes[appliedSettings.keySplit] ||
     keySplitterModes[settingsSchema.keySplit.default]
-  const appearance = useAppearance(settings)
+  const appearance = useAppearance(appliedSettings)
   const unitSizePts = 8
   const insetPts = 16
   let totalUnits = keyWidths[0].reduce((a, b) => a + b) + keySplitter.units
