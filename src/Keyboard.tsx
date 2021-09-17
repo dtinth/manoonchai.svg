@@ -6,7 +6,7 @@ export const settingsSchema = {
   color: {
     default: 'dark',
     options: {
-      light: 'Light theme', // Unimplemented
+      // light: 'Light theme',
       dark: 'Dark theme',
     },
   },
@@ -21,9 +21,9 @@ export const settingsSchema = {
   colorMode: {
     default: 'consonant',
     options: {
-      none: 'No coloring',
+      // none: 'No coloring',
       consonant: 'Color by consonant class',
-      finger: 'Color by finger', // Unimplemented
+      // finger: 'Color by finger',
     },
   },
 } as const
