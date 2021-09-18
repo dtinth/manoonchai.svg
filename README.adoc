@@ -7,8 +7,35 @@ Layout visualizer for Manoonchai keyboard layout.
 === Dark and light theme
 
 .Dark theme
+====
 image::https://manoonchai-svg.vercel.app/api/svg?theme=dark&keySplit=none&colorMode=none&bg=1[link="https://manoonchai-svg.vercel.app/api/svg?theme=dark&keySplit=none&colorMode=none&bg=1"]
+====
 
 .Light theme
+====
 image::https://manoonchai-svg.vercel.app/api/svg?theme=light&keySplit=none&colorMode=none&bg=1[link="https://manoonchai-svg.vercel.app/api/svg?theme=light&keySplit=none&colorMode=none&bg=1"]
+====
 
+=== Keyboard splitting
+
+.Split at index finger
+====
+image::https://manoonchai-svg.vercel.app/api/svg?theme=dark&keySplit=index&colorMode=none&bg=1[link="https://manoonchai-svg.vercel.app/api/svg?theme=dark&keySplit=index&colorMode=none&bg=1"]
+====
+
+.Split between left and right hands
+====
+image::https://manoonchai-svg.vercel.app/api/svg?theme=dark&keySplit=hand&colorMode=none&bg=1[link="https://manoonchai-svg.vercel.app/api/svg?theme=dark&keySplit=hand&colorMode=none&bg=1"]
+====
+
+=== Colorization
+
+.Color by consonant class
+====
+image::https://manoonchai-svg.vercel.app/api/svg?theme=dark&keySplit=none&colorMode=consonant&bg=1[link="https://manoonchai-svg.vercel.app/api/svg?theme=dark&keySplit=none&colorMode=consonant&bg=1"]
+====
+
+.Color by finger
+====
+image::https://manoonchai-svg.vercel.app/api/svg?theme=light&keySplit=none&colorMode=finger&bg=1[link="https://manoonchai-svg.vercel.app/api/svg?theme=light&keySplit=none&colorMode=finger&bg=1"]
+====
