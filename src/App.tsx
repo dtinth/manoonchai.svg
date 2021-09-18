@@ -1,14 +1,19 @@
 import './App.css'
-import React, { useState } from 'react'
+import React, { useState, lazy, Suspense } from 'react'
 import Keyboard, { Settings, settingsSchema } from './Keyboard'
-import { SettingsEditor } from './SettingsEditor'
+
+const SettingsEditor = lazy(() => import('./SettingsEditor'))
 
 export default function App() {
   const [settings, changeSetting] = useSettings()
   return (
     <div className="App">
       <Keyboard settings={settings} />
-      <SettingsEditor settings={settings} changeSetting={changeSetting} />
+      <div style={{ padding: '1em' }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <SettingsEditor settings={settings} changeSetting={changeSetting} />
+        </Suspense>
+      </div>
     </div>
   )
 }
