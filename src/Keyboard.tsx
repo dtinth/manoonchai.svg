@@ -93,8 +93,9 @@ export default function Keyboard({
             currentUnits += widthUnits
             const widthPts = widthUnits * unitSizePts - 2 * keyInsetPts
             const heightPts = 4 * unitSizePts - 2 * keyInsetPts
-            const labels = keyCharacters[row]?.[column - 1] as
+            const labels = keyCharacters[row]?.[column] as
               | KeyLabelsSpec
+              | null
               | undefined
             return (
               <React.Fragment key={`${row}-${column}`}>
