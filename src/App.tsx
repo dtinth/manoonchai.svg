@@ -34,6 +34,15 @@ export default function App() {
         </p>
         <p>
           <button type="submit">Generate SVG</button>
+
+          <input
+            type="checkbox"
+            name="bg"
+            value="1"
+            id="with-bg"
+            defaultChecked
+          />
+          <label htmlFor="with-bg">with background</label>
         </p>
       </form>
     </div>
