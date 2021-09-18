@@ -58,10 +58,12 @@ export default function Keyboard({
   const svgHeight = keyWidths.length * 4 * unitSizePts + 2 * insetPts
   const keyInsetPts = 2
   const background = appearance.getBackground()
+  const textColor = appearance.getWebPageTextColor()
 
   React.useEffect(() => {
     document.body.style.backgroundColor = background
-  }, [background])
+    document.body.style.color = textColor
+  }, [background, textColor])
 
   return (
     <AppearanceContext.Provider value={appearance}>
@@ -241,6 +243,7 @@ type KeyLabelsSpec = [string, string, string]
 
 export interface IAppearance {
   getBackground(): string
+  getWebPageTextColor(): string
   getKeyStroke(
     row: number,
     col: number,
@@ -267,6 +270,7 @@ function useAppearance(settings: Settings): IAppearance {
 
   return {
     getBackground: () => theme.background,
+    getWebPageTextColor: () => theme.labelFill,
     getKeyStroke: (row, column, labels) =>
       colorizer.getKeyStroke(theme, row, column, labels),
     getKeyFill: (row, column, labels) =>
