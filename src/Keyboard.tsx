@@ -36,9 +36,11 @@ export type Settings = {
 export default function Keyboard({
   settings,
   extra,
+  bg,
 }: {
   settings: Partial<Settings>
   extra?: React.ReactNode
+  bg?: boolean
 }) {
   const appliedSettings: Settings = Object.fromEntries(
     Object.entries(settingsSchema).map(([key, value]) => {
@@ -50,7 +52,7 @@ export default function Keyboard({
     keySplitterModes[settingsSchema.keySplit.default]
   const appearance = useAppearance(appliedSettings)
   const unitSizePts = 8
-  const insetPts = 16
+  const insetPts = 8
   let totalUnits = keyWidths[0].reduce((a, b) => a + b) + keySplitter.units
   const svgWidth = totalUnits * unitSizePts + 2 * insetPts
   const svgHeight = keyWidths.length * 4 * unitSizePts + 2 * insetPts
@@ -68,14 +70,19 @@ export default function Keyboard({
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
       >
+        {bg && (
+          <rect
+            x={0}
+            y={0}
+            width={svgWidth}
+            height={svgHeight}
+            fill={background}
+            rx={8}
+          />
+        )}
         {extra}
-        <style>{`
-          .label {
-            font-family: Waree;
-          }
-        `}</style>
         {keyWidths.map((widths, row) => {
-          const y = insetPts + row * 4 * unitSizePts
+          const y = insetPts + row * 4 * unitSizePts + keyInsetPts
           let currentUnits = 0
           return widths.map((widthUnits, column) => {
             currentUnits += keySplitter.marginLeft(row, column)
