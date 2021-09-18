@@ -1,6 +1,6 @@
 import React from 'react'
 import { keyCharacters } from './manoonchai.json'
-import { fontData } from './generated/waree.json'
+import { fontData } from './generated/umpush.json'
 import { lch2hex } from './Color'
 
 export const settingsSchema = {
@@ -315,8 +315,8 @@ const themes: Record<Settings['theme'], ITheme> = {
     keyColorChroma: 12,
     keyColorLuminance: 24,
     labelFill: '#eee',
-    labelColorChroma: 48,
-    labelColorLuminance: 80,
+    labelColorChroma: 64,
+    labelColorLuminance: 84,
   },
   light: {
     background: '#eee',
@@ -382,10 +382,8 @@ const colorizers: Record<Settings['colorMode'], IColorizer> = {
         hue = 200
       } else if (char < 'ฯ') {
         hue = 250
-      } else if (char < '็') {
-        hue = 300
       } else {
-        hue = 330
+        hue = 300
       }
       return lch2hex(luminance, chroma, hue)
     },
