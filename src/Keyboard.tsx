@@ -248,12 +248,12 @@ export interface IAppearance {
   getKeyStroke(
     row: number,
     col: number,
-    labels: KeyLabelsSpec | undefined,
+    labels: KeyLabelsSpec | undefined | null,
   ): string
   getKeyFill(
     row: number,
     col: number,
-    labels: KeyLabelsSpec | undefined,
+    labels: KeyLabelsSpec | undefined | null,
   ): string
   getLabelFill(
     row: number,
@@ -352,14 +352,14 @@ export interface IColorizer {
     theme: ITheme,
     row: number,
     column: number,
-    labels: KeyLabelsSpec | undefined,
+    labels: KeyLabelsSpec | undefined | null,
   ): string
 
   getKeyFill(
     theme: ITheme,
     row: number,
     column: number,
-    labels: KeyLabelsSpec | undefined,
+    labels: KeyLabelsSpec | undefined | null,
   ): string
 
   getLabelFill(
