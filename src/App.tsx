@@ -1,5 +1,4 @@
 import './App.css'
-import './fonts/waree.css'
 import React, { useState } from 'react'
 import Keyboard, { Settings, settingsSchema } from './Keyboard'
 

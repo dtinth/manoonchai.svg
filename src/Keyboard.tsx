@@ -1,4 +1,6 @@
 import React from 'react'
+import { keyCharacters } from './manoonchai.json'
+import { fontData } from './generated/waree.json'
 import { lch2hex } from './Color'
 
 export const settingsSchema = {
@@ -180,19 +182,46 @@ function KeyLabel({
   fill: string
   large?: boolean
 }) {
-  const offset =
-    3 + (/[่้๊๋์๎]/.test(text) ? 4 : 0) + (/[ุู]/.test(text) ? -4 : 0)
+  const characters = []
+  let cx = 0
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity
+  for (const char of text) {
+    const charData = (fontData as any)[char]
+    if (charData) {
+      characters.push([cx, charData])
+      const width = charData.bounds[1][0] - charData.bounds[0][0]
+      minX = Math.min(minX, cx + charData.bounds[0][0])
+      minY = Math.min(minY, charData.bounds[0][1])
+      maxX = Math.max(maxX, cx + charData.bounds[1][0])
+      maxY = Math.max(maxY, charData.bounds[1][1])
+      cx += width
+    }
+  }
+  const centerY = (minY + maxY) / 2
+  let tx = -minX - (maxX - minX) / 2,
+    ty =
+      240 +
+      (Math.max(centerY, -480) - centerY) +
+      (Math.min(centerY, 0) - centerY)
+  const scale = large ? 0.0125 : 0.01
   return (
-    <text
-      className="label"
-      x={x}
-      y={y + offset}
-      textAnchor="middle"
-      fontSize={large ? '9pt' : '7pt'}
-      fill={fill}
+    <g
+      transform={`translate(${x}, ${y}) scale(${scale}) translate(${tx}, ${ty})`}
     >
-      {text}
-    </text>
+      {characters.map(([cx, charData], i) => {
+        return (
+          <path
+            key={i}
+            d={charData.d}
+            fill={fill}
+            transform={`translate(${cx}, 0)`}
+          />
+        )
+      })}
+    </g>
   )
 }
 
@@ -397,61 +426,4 @@ const keyWidths = [
   [7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 9],
   [9, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 11],
   [6, 4, 6, 24, 6, 4, 4, 6],
-]
-
-const keyCharacters = [
-  [
-    ['1', '!', '๑'],
-    ['2', '@', '๒'],
-    ['3', '#', '๓'],
-    ['4', '$', '๔'],
-    ['5', '%', '๕'],
-    ['6', '^', '๖'],
-    ['7', '&', '๗'],
-    ['8', '*', '๘'],
-    ['9', '(', '๙'],
-    ['0', ')', '๐'],
-    ['-', '_', '÷'],
-    ['=', '+', '×'],
-  ],
-  [
-    ['ใ', 'ฒ', ' '],
-    ['ต', 'ฏ', ' '],
-    ['ห', 'ซ', ' '],
-    ['ล', 'ญ', ' '],
-    ['ส', 'ฟ', ' '],
-    ['ป', 'ฉ', ' '],
-    ['ั', 'ึ', 'ฺ'],
-    ['ก', 'ธ', ' '],
-    ['ิ', 'ฐ', ' '],
-    ['บ', 'ฎ', ' '],
-    ['็', 'ฆ', '[{'],
-    ['ฬ', 'ฑ', ']}'],
-    ['ฯ', 'ฌ', '\\|'],
-  ],
-  [
-    ['ง', 'ษ', '◌'],
-    ['เ', 'ถ', '๏'],
-    ['ร', 'แ', '๛'],
-    ['น', 'ช', '฿'],
-    ['ม', 'พ', ' '],
-    ['อ', 'ผ', 'ํ'],
-    ['า', 'ำ', 'ๅ'],
-    ['่', 'ข', 'ฃ'],
-    ['้', 'โ', ' '],
-    ['ว', 'ภ', ';:'],
-    ['ื', '"', '\'"'],
-  ],
-  [
-    ['ุ', 'ฤ', 'ฦ'],
-    ['ไ', 'ฝ', ' '],
-    ['ท', 'ๆ', '๚'],
-    ['ย', 'ณ', ' '],
-    ['จ', '๊', ' '],
-    ['ค', '๋', 'ฅ'],
-    ['ี', '์', '๎'],
-    ['ด', 'ศ', ','],
-    ['ะ', 'ฮ', '.'],
-    ['ู', '?', '/?'],
-  ],
 ]
