@@ -298,7 +298,7 @@ const keySplitterModes: Record<Settings['keySplit'], IKeySplitter> = {
       return row < 4 ? (column === 6 ? 1 : 0) : 0
     },
     grow: (row: number, column: number) => {
-      return row === 4 && column === 3 ? 2 : 0
+      return row === 4 && column === 3 ? 1 : 0
     },
   },
   index: {
