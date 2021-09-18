@@ -191,7 +191,7 @@ function KeyLabel({
     let cx = 0
     let i = 0
     for (const char of text) {
-      if (i > 0) cx += 96
+      if (i > 0) cx += 180
       const charData = (fontData as any)[char]
       if (charData) {
         characters.push([cx, charData])
@@ -208,7 +208,7 @@ function KeyLabel({
   const centerY = (minY + maxY) / 2
   let tx = -minX - (maxX - minX) / 2,
     ty =
-      240 +
+      270 +
       (Math.max(centerY, -480) - centerY) +
       (Math.min(centerY, 0) - centerY)
   const scale = large ? 0.0125 : 0.01
