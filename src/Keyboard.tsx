@@ -183,21 +183,26 @@ function KeyLabel({
   large?: boolean
 }) {
   const characters = []
-  let cx = 0
   let minX = Infinity,
     minY = Infinity,
     maxX = -Infinity,
     maxY = -Infinity
-  for (const char of text) {
-    const charData = (fontData as any)[char]
-    if (charData) {
-      characters.push([cx, charData])
-      const width = charData.bounds[1][0] - charData.bounds[0][0]
-      minX = Math.min(minX, cx + charData.bounds[0][0])
-      minY = Math.min(minY, charData.bounds[0][1])
-      maxX = Math.max(maxX, cx + charData.bounds[1][0])
-      maxY = Math.max(maxY, charData.bounds[1][1])
-      cx += width
+  {
+    let cx = 0
+    let i = 0
+    for (const char of text) {
+      if (i > 0) cx += 96
+      const charData = (fontData as any)[char]
+      if (charData) {
+        characters.push([cx, charData])
+        const width = charData.bounds[1][0] - charData.bounds[0][0]
+        minX = Math.min(minX, cx + charData.bounds[0][0])
+        minY = Math.min(minY, charData.bounds[0][1])
+        maxX = Math.max(maxX, cx + charData.bounds[1][0])
+        maxY = Math.max(maxY, charData.bounds[1][1])
+        cx += width
+      }
+      i++
     }
   }
   const centerY = (minY + maxY) / 2
